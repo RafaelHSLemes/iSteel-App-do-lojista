@@ -2,7 +2,7 @@ package com.utils;
 
 
 public class CommonUtilities {
-    public static final String SERVER = "https://agilemakers.com.br/";
+    public static final String SERVER = "https://isteel.com.br/";
     public static final String SERVER_FOLDER_PATH = "";
     public static final String SERVER_WEBSERVICE_PATH = SERVER_FOLDER_PATH + "webservice_shark.php?";
 
