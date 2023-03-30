@@ -98,7 +98,7 @@ public class NotiFicationFragment extends Fragment implements NotificationAdapte
     public void onResume() {
         super.onResume();
 
-        // getNotificationDetails(false);
+         getNotificationDetails(false);
     }
 
     public boolean isDeliver() {
