@@ -66,6 +66,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Esite on 30-03-2018.
@@ -100,6 +101,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     OrderItemsRecyclerAdapter adapter;
     AlertDialog dialog_declineOrder;
     ExecuteWebServerUrl currExeTask;
+    String tipoDeEntregaValue = "";
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
     private ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
@@ -1153,6 +1155,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                     responsavel.setText(generalFunc.getJsonValueStr("UserName", obj_msg));
                     endereco.setText(generalFunc.getJsonValueStr("DeliveryAddress", obj_msg));
+                    tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
 
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);
 
@@ -1479,22 +1482,44 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                 (new StartActProcess(getActContext())).startActForResult(TrackOrderActivity.class, bn, Utils.TRACK_ORDER_REQ_CODE);
                 return;
             } else if (view.getId() == assignDriverBtn.getId() || view.getId() == reAssignBtn.getId()) {
-                generalFunc.showGeneralMessage("",
-                        "Como deseja realizar a entrega?",
-                        "Enviado pela loja",
-                        "Chamar pelo app",
-                        "Cliente retirou",buttonId -> {
 
-                    if (buttonId == 1) {
-                        assignDriver();
-                    }  else if (buttonId == 0) {
-                        marcarComoEntregue();
-                    } else {
-                        marcarComoEntregue();
-                    }
-                });
+                String logistica = "";
+                logistica = orderData.get("logistica");
 
-                return;
+               // assignDriverBtn.setText(tipoDeEntregaValue);
+
+                if (Objects.equals(tipoDeEntregaValue, "retirada")){
+                    generalFunc.showGeneralMessage("",
+                            "Como deseja realizar a entrega?",
+                            "Enviado pela loja",
+                            "Chamar pelo app", buttonId -> {
+
+                                if (buttonId == 1) {
+                                    assignDriver();
+                                }  else {
+                                    marcarComoEntregue();
+                                }
+                            });
+                    return;
+
+                } else {
+                    generalFunc.showGeneralMessage("",
+                            "O cliente conferiu e retirou todos os produtos?",
+                            "Fechar",
+                            "Sim",buttonId -> {
+
+                                if (buttonId == 1) {
+                                    marcarComoEntregue();
+                                } else {
+                                    return;
+                                }
+                            });
+                    return;
+                }
+
+
+
+
             } else if (view.getId() == viewPrescTxtView.getId()) {
 
                 Bundle bn = new Bundle();
