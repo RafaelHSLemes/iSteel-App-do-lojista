@@ -63,7 +63,6 @@ public class MyProfileFragment extends Fragment {
     public String userProfileJson = "";
     public JSONObject obj_userProfile;
     GeneralFunctions generalFunc;
-
     ImageView editProfileImage;
 
     SelectableRoundedImageView userImgView, userImgView_toolbar;
