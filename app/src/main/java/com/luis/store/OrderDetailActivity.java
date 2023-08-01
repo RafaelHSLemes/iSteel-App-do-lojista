@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.adapter.files.OrderItemsRecyclerAdapter;
 import com.dialogs.OpenListView;
@@ -125,6 +126,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     /*Thermal*/
     HashMap<String, String> reqiuredDetails = new HashMap<>();
     CustomDialog customDialog;
+
     public static final int REQUEST_COARSE_LOCATION = 200;
     JSONArray PrescriptionImages;
     FloatingActionButton connectPrinterArea;
@@ -137,6 +139,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         setContentView(R.layout.activity_order_detail);
         generalFunc = MyApp.getInstance().getGeneralFun(getActContext());
 
+
         userprofileJson = generalFunc.retrieveValue(Utils.USER_PROFILE_JSON);
         orderData = (HashMap<String, String>) getIntent().getSerializableExtra("OrderData");
 
@@ -146,6 +149,9 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         initView();
 //        setChargeDetails();
         setLabels();
+
+        TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
+        tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
     }
 
     private void initView() {
@@ -162,7 +168,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         containerView = findViewById(R.id.containerView);
         subTitleTxt = (MTextView) findViewById(R.id.subTitleTxt);
         totalItemsTxt = (MTextView) findViewById(R.id.totalItemsTxt);
-        deliveryStatusTxtView = (MTextView) findViewById(R.id.deliveryStatusTxtView);
         backImgView = (ImageView) findViewById(R.id.backImgView);
         iconImgView = (ImageView) findViewById(R.id.iconImgView);
         loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
@@ -223,14 +228,14 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         iconImgView.setVisibility(View.GONE);
         iconRefreshImgView.setVisibility(View.GONE);
         iconInstructionView.setVisibility(View.GONE);
-       
+
 
         int dp4=Utils.dipToPixels(getActContext(), 4);
         iconImgView.setPadding(dp4, dp4, dp4, dp4);
         iconRefreshImgView.setPadding(dp4, dp4, dp4, dp4);
 
-     //   iconInstructionView.setPadding(Utils.dipToPixels(getActContext(), 4), Utils.dipToPixels(getActContext(), 4), Utils.dipToPixels(getActContext(), 4), Utils.dipToPixels(getActContext(), 4));
-		
+        //   iconInstructionView.setPadding(Utils.dipToPixels(getActContext(), 4), Utils.dipToPixels(getActContext(), 4), Utils.dipToPixels(getActContext(), 4), Utils.dipToPixels(getActContext(), 4));
+
         containerView.setVisibility(View.GONE);
 
 
@@ -251,7 +256,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         assignDriverBtn.setText(generalFunc.retrieveLangLBl("Assign Driver", "LBL_ASSIGN_DRIVER"));
         reAssignBtn.setText(generalFunc.retrieveLangLBl("Assign Driver", "LBL_ASSIGN_DRIVER"));
         declineAssignBtn.setText(generalFunc.retrieveLangLBl("", "LBL_DECLINE_TXT"));
-       // viewPrescTxtView.setText(generalFunc.retrieveLangLBl("View Prescription", "LBL_VIEW_PRESCRIPTION"));
+        // viewPrescTxtView.setText(generalFunc.retrieveLangLBl("View Prescription", "LBL_VIEW_PRESCRIPTION"));
 
         assignDriverBtn.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
         assignDriverBtn.setTextColor(getResources().getColor(android.R.color.white));
@@ -514,7 +519,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         String titleDailog = generalFunc.retrieveLangLBl("Decline Order", "LBL_DECLINE_ORDER");
 
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getActContext());
-       // builder.setTitle(generalFunc.retrieveLangLBl("Decline Order", "LBL_DECLINE_ORDER"));
+        // builder.setTitle(generalFunc.retrieveLangLBl("Decline Order", "LBL_DECLINE_ORDER"));
 
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.decline_order_dialog_design, null);
@@ -545,10 +550,10 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
 
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
-       // HashMap<String, String> map = new HashMap<>();
-       // map.put("title","-- " + generalFunc.retrieveLangLBl("Select Reason", "LBL_SELECT_CANCEL_REASON") + " --");
-      //  map.put("id", "");
-       // list.add(map);
+        // HashMap<String, String> map = new HashMap<>();
+        // map.put("title","-- " + generalFunc.retrieveLangLBl("Select Reason", "LBL_SELECT_CANCEL_REASON") + " --");
+        //  map.put("id", "");
+        // list.add(map);
         JSONArray arr_msg = generalFunc.getJsonArray(Utils.message_str, responseString);
         if (arr_msg != null) {
 
@@ -556,8 +561,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                 JSONObject obj_tmp = generalFunc.getJsonObject(arr_msg, i);
 
-              //  arrListTitle.add(generalFunc.getJsonValueStr("vTitle", obj_tmp));
-             //   arrListIDs.add(generalFunc.getJsonValueStr("iCancelReasonId", obj_tmp));
+                //  arrListTitle.add(generalFunc.getJsonValueStr("vTitle", obj_tmp));
+                //   arrListIDs.add(generalFunc.getJsonValueStr("iCancelReasonId", obj_tmp));
 
                 HashMap<String, String> datamap = new HashMap<>();
                 datamap.put("title", generalFunc.getJsonValueStr("vTitle", obj_tmp));
@@ -567,8 +572,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
             }
 
-           // arrListTitle.add(generalFunc.retrieveLangLBl("", "LBL_OTHER_DL"));
-           // arrListIDs.add("");
+            // arrListTitle.add(generalFunc.retrieveLangLBl("", "LBL_OTHER_DL"));
+            // arrListIDs.add("");
 
 
             HashMap<String, String> othermap = new HashMap<>();
@@ -577,7 +582,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
             list.add(othermap);
 
 
-         //   AppCompatSpinner spinner = (AppCompatSpinner) dialogView.findViewById(R.id.declineReasonsSpinner);
+            //   AppCompatSpinner spinner = (AppCompatSpinner) dialogView.findViewById(R.id.declineReasonsSpinner);
 
             MTextView cancelTxt = (MTextView) dialogView.findViewById(R.id.cancelTxt);
             MTextView submitTxt = (MTextView) dialogView.findViewById(R.id.submitTxt);
@@ -597,7 +602,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
             submitTxt.setText(generalFunc.retrieveLangLBl("", "LBL_YES"));
             cancelTxt.setText(generalFunc.retrieveLangLBl("", "LBL_NO"));
             submitTxt.setOnClickListener(v -> {
-               // String selectedItemId = arrListIDs.get(spinner.getSelectedItemPosition());
+                // String selectedItemId = arrListIDs.get(spinner.getSelectedItemPosition());
 
                 if (selCurrentPosition == -1) {
                     return;
@@ -681,7 +686,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
             dialog_declineOrder.getWindow().setBackgroundDrawable(getActContext().getResources().getDrawable(R.drawable.all_roundcurve_card));
             dialog_declineOrder.show();
 
-          //  dialog_declineOrder.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            //  dialog_declineOrder.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
 
             /*dialog_declineOrder.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -957,7 +962,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                         // Massoni App
                         generateAlert.setBtnClickList(btn_id -> {
                             if (btn_id == 1) {
-                               // marcarComoEntregue();
+                                // marcarComoEntregue();
                                 generateAlert.closeAlertBox();
                             } else if (btn_id == 0) {
                                 declineBtn.performClick();
@@ -1062,7 +1067,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     }
 
 
-                     PrescriptionImages = generalFunc.getJsonArray("PrescriptionImages", obj_msg);
+                    PrescriptionImages = generalFunc.getJsonArray("PrescriptionImages", obj_msg);
 
                     if (PrescriptionImages != null && !PrescriptionImages.equals("")) {
                         viewPrescTxtView.setVisibility(View.VISIBLE);
@@ -1157,6 +1162,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     endereco.setText(generalFunc.getJsonValueStr("DeliveryAddress", obj_msg));
                     tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
 
+
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);
 
                     if (fareArr != null) {
@@ -1226,7 +1232,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         menu.findItem(R.id.menu_specialInstruction).setVisible(true);
 
         Utils.setMenuTextColor(menu.findItem(R.id.menu_specialInstruction), getResources().getColor(R.color.appThemeColor_TXT_1));
-       
+
         return true;
     }
 
@@ -1252,10 +1258,10 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                 return super.onOptionsItemSelected(item);
         }
     }
- 
+
 */
 
- /*Thermal Print Start*/
+    /*Thermal Print Start*/
     private void generateBillData(boolean skipRedirect) {
 
 
@@ -1486,7 +1492,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                 String logistica = "";
                 logistica = orderData.get("logistica");
 
-               // assignDriverBtn.setText(tipoDeEntregaValue);
+                // assignDriverBtn.setText(tipoDeEntregaValue);
 
                 if (Objects.equals(tipoDeEntregaValue, "retirada")){
                     generalFunc.showGeneralMessage("",
@@ -1557,7 +1563,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                     }
                     break;
-					
+
                 case R.id.iconRefreshImgView:
                     getOrderDetails();
                     break;
