@@ -104,7 +104,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     ExecuteWebServerUrl currExeTask;
     String tipoDeEntregaValue = "";
 
-    String labelTipoDeEntrega = "Tipo de entrega:";
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
     private ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
