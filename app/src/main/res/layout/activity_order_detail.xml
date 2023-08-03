@@ -106,6 +106,16 @@
                         android:textSize="@dimen/_10ssp" />
 
                     <com.view.MTextView
+                        android:id="@+id/ePaymentOptionTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+
+                    <com.view.MTextView
                         android:id="@+id/deliveryStatusTxtView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

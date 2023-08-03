@@ -104,6 +104,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     ExecuteWebServerUrl currExeTask;
     String tipoDeEntregaValue = "";
 
+    String ePaymentOption = "";
+
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
     private ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
@@ -1159,9 +1161,13 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     responsavel.setText(generalFunc.getJsonValueStr("UserName", obj_msg));
                     endereco.setText(generalFunc.getJsonValueStr("DeliveryAddress", obj_msg));
                     tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
+                    ePaymentOption = generalFunc.getJsonValueStr("ePaymentOption", obj_msg);
 
                     TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
                     tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
+
+                    TextView ePaymentOptionTextView = findViewById(R.id.ePaymentOptionTextView);
+                    ePaymentOptionTextView.setText("Forma de pagamento: " + ePaymentOption);
 
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);
 
