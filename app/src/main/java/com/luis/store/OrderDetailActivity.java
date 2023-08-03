@@ -103,6 +103,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     AlertDialog dialog_declineOrder;
     ExecuteWebServerUrl currExeTask;
     String tipoDeEntregaValue = "";
+
+    String labelTipoDeEntrega = "Tipo de entrega:";
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
     private ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
@@ -126,7 +128,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     /*Thermal*/
     HashMap<String, String> reqiuredDetails = new HashMap<>();
     CustomDialog customDialog;
-
     public static final int REQUEST_COARSE_LOCATION = 200;
     JSONArray PrescriptionImages;
     FloatingActionButton connectPrinterArea;
@@ -139,7 +140,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         setContentView(R.layout.activity_order_detail);
         generalFunc = MyApp.getInstance().getGeneralFun(getActContext());
 
-
         userprofileJson = generalFunc.retrieveValue(Utils.USER_PROFILE_JSON);
         orderData = (HashMap<String, String>) getIntent().getSerializableExtra("OrderData");
 
@@ -150,8 +150,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 //        setChargeDetails();
         setLabels();
 
-        TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
-        tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
     }
 
     private void initView() {
@@ -168,6 +166,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         containerView = findViewById(R.id.containerView);
         subTitleTxt = (MTextView) findViewById(R.id.subTitleTxt);
         totalItemsTxt = (MTextView) findViewById(R.id.totalItemsTxt);
+        deliveryStatusTxtView = (MTextView) findViewById(R.id.deliveryStatusTxtView);
         backImgView = (ImageView) findViewById(R.id.backImgView);
         iconImgView = (ImageView) findViewById(R.id.iconImgView);
         loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
@@ -1162,6 +1161,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     endereco.setText(generalFunc.getJsonValueStr("DeliveryAddress", obj_msg));
                     tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
 
+                    TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
+                    tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
 
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);
 
