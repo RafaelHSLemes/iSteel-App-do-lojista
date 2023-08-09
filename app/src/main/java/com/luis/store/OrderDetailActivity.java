@@ -108,6 +108,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
     String acceptBankCheck = "";
 
+    String vStatus = "";
+
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
     private ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
@@ -1162,6 +1164,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
                     ePaymentOption = generalFunc.getJsonValueStr("ePaymentOption", obj_msg);
                     acceptBankCheck = generalFunc.getJsonValueStr("acceptBankCheck", obj_msg);
+                    vStatus = generalFunc.getJsonValueStr("vStatus", obj_msg);
 
                     TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
                     tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
@@ -1172,16 +1175,19 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     TextView mensagemDePagamentoTextView = findViewById(R.id.mensagemDePagamentoTextView);
 
                     if (ePaymentOption.equals("BankCheck")) {
+                        ePaymentOptionTextView.setText("Forma de pagamento: Cheque");
                         mensagemDePagamentoTextView.setText("Seu entregador deve receber o cheque relativo a esta transação.");
                     } else if (ePaymentOption.equals("Cash")) {
                         {
+                            ePaymentOptionTextView.setText("Forma de pagamento: Dinheiro");
                             mensagemDePagamentoTextView.setText("Seu entregador deve receber o dinheiro relativo a esta transação.");
                         }
 
                     } else {
 
                         ePaymentOption.equals("Card"); {
-                            mensagemDePagamentoTextView.setText("Pedido pago com cartão de crédito.");
+                            ePaymentOptionTextView.setText("Forma de pagamento: Cartão");
+                            mensagemDePagamentoTextView.setText("Pedido pago.");
                         }
 
                     }
