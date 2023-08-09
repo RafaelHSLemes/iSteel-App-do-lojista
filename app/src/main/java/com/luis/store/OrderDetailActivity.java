@@ -106,6 +106,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
     String ePaymentOption = "";
 
+    String acceptBankCheck = "";
+
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
     private ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
@@ -1056,13 +1058,10 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     reqiuredDetails.put("ORDER_VIA", generalFunc.retrieveValue(Utils.SITE_NAME_KEY));
 
 
-
-
                     if (vInstruction != null && !vInstruction.equals("")) {
                         iconInstructionView.setVisibility(View.VISIBLE);
                         iconInstructionView.setOnClickListener(new setOnClickList());
-                    }else
-                    {
+                    } else {
                         iconRefreshImgView.setVisibility(View.GONE);
                     }
 
@@ -1162,12 +1161,30 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     endereco.setText(generalFunc.getJsonValueStr("DeliveryAddress", obj_msg));
                     tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
                     ePaymentOption = generalFunc.getJsonValueStr("ePaymentOption", obj_msg);
+                    acceptBankCheck = generalFunc.getJsonValueStr("acceptBankCheck", obj_msg);
 
                     TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
                     tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
 
                     TextView ePaymentOptionTextView = findViewById(R.id.ePaymentOptionTextView);
                     ePaymentOptionTextView.setText("Forma de pagamento: " + ePaymentOption);
+
+                    TextView mensagemDePagamentoTextView = findViewById(R.id.mensagemDePagamentoTextView);
+
+                    if (ePaymentOption.equals("BankCheck")) {
+                        mensagemDePagamentoTextView.setText("Seu entregador deve receber o cheque relativo a esta transação.");
+                    } else if (ePaymentOption.equals("Cash")) {
+                        {
+                            mensagemDePagamentoTextView.setText("Seu entregador deve receber o dinheiro relativo a esta transação.");
+                        }
+
+                    } else {
+
+                        ePaymentOption.equals("Card"); {
+                            mensagemDePagamentoTextView.setText("Pedido pago com cartão de crédito.");
+                        }
+
+                    }
 
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);
 
