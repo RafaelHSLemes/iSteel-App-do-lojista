@@ -3,6 +3,7 @@ package com.luis.store;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -27,6 +28,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -108,7 +110,11 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
     String acceptBankCheck = "";
 
-    String vStatus = "";
+    String vStatusNew = "";
+
+    String vPaymentUserStatus = "";
+
+    private Button confirmarRecebimentoButton;
 
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
@@ -1164,15 +1170,17 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
                     ePaymentOption = generalFunc.getJsonValueStr("ePaymentOption", obj_msg);
                     acceptBankCheck = generalFunc.getJsonValueStr("acceptBankCheck", obj_msg);
-                    vStatus = generalFunc.getJsonValueStr("vStatus", obj_msg);
+                    vStatusNew = generalFunc.getJsonValueStr("vStatusNew", obj_msg);
+                    vPaymentUserStatus = generalFunc.getJsonValueStr("vPaymentUserStatus", obj_msg);
 
                     TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
                     tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
 
                     TextView ePaymentOptionTextView = findViewById(R.id.ePaymentOptionTextView);
-                    ePaymentOptionTextView.setText("Forma de pagamento: " + ePaymentOption);
 
                     TextView mensagemDePagamentoTextView = findViewById(R.id.mensagemDePagamentoTextView);
+
+                    confirmarRecebimentoButton = findViewById(R.id.confirmarRecebimentoBtn);
 
                     if (ePaymentOption.equals("BankCheck")) {
                         ePaymentOptionTextView.setText("Forma de pagamento: Cheque");
@@ -1190,6 +1198,12 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                             mensagemDePagamentoTextView.setText("Pedido pago.");
                         }
 
+                    }
+
+                    if (vStatusNew.equals("O motorista já está com o seu pedido!")) {
+                        confirmarRecebimentoButton.setVisibility(View.VISIBLE);
+                    } else {
+                        confirmarRecebimentoButton.setVisibility(View.GONE);
                     }
 
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);

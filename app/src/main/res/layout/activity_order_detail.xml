@@ -359,6 +359,15 @@
                     android:layout_weight="1" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/confirmarRecebimentoBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Confirmar recebimento"
+                android:visibility="gone"
+                android:backgroundTint="@color/appThemeColor_Dark_1"
+                android:textColor="@color/white"/>
+
             <include
                 android:id="@+id/trackOrderBtn"
                 layout="@layout/btn_type_1"
