@@ -1206,6 +1206,34 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                         confirmarRecebimentoButton.setVisibility(View.GONE);
                     }
 
+                    confirmarRecebimentoButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                                exibirAlerta(view);
+                    }
+
+                        private void exibirAlerta(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setTitle("Confirmar Recebimento")
+                            .setMessage("Deseja confirmar o recebimento?")
+                            .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Lógica a ser executada quando o botão "Permitir" é clicado
+                                    // Por exemplo, você pode adicionar código para processar o recebimento.
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Lógica a ser executada quando o botão "Cancelar" é clicado
+                                    dialog.dismiss(); // Fecha o diálogo
+                                }
+                            })
+                            .show();
+                }
+            });
+
+
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);
 
                     if (fareArr != null) {
