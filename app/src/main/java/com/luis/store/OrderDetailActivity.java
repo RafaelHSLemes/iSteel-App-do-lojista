@@ -116,6 +116,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
     private Button confirmarRecebimentoButton;
 
+    String ePaid = "";
+
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
     private ArrayList<HashMap<String, String>> dataList = new ArrayList<>();
@@ -1172,6 +1174,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     acceptBankCheck = generalFunc.getJsonValueStr("acceptBankCheck", obj_msg);
                     vStatusNew = generalFunc.getJsonValueStr("vStatusNew", obj_msg);
                     vPaymentUserStatus = generalFunc.getJsonValueStr("vPaymentUserStatus", obj_msg);
+                    ePaid = generalFunc.getJsonValueStr("ePaid", obj_msg);
 
                     TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
                     tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
@@ -1200,7 +1203,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                     }
 
-                    if (vStatusNew.equals("O motorista já está com o seu pedido!")) {
+                    if (vStatusNew.equals("O motorista já está com o seu pedido!") && ePaid.equals("No")) {
                         confirmarRecebimentoButton.setVisibility(View.VISIBLE);
                     } else {
                         confirmarRecebimentoButton.setVisibility(View.GONE);
