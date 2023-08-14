@@ -792,6 +792,10 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     }
 
 
+    public void ConfirmPayment() {
+        marcarComoEntregue();
+    }
+
     public void marcarComoEntregue() {
 
         HashMap<String, String> parameters = new HashMap<>();
@@ -1203,7 +1207,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                     }
 
-                    if (vStatusNew.equals("O motorista já está com o seu pedido!") && ePaid.equals("No")) {
+                    if (ePaid.equals("No")) {
                         confirmarRecebimentoButton.setVisibility(View.VISIBLE);
                     } else {
                         confirmarRecebimentoButton.setVisibility(View.GONE);
@@ -1219,11 +1223,12 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                         private void exibirAlerta(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                     builder.setTitle("Confirmar Recebimento")
-                            .setMessage("Deseja confirmar o recebimento?")
+                            .setMessage("Confirmar recebimento do valor total da compra do cliente?")
                             .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     // Lógica a ser executada quando o botão "Permitir" é clicado
                                     // Por exemplo, você pode adicionar código para processar o recebimento.
+                                    ConfirmPayment();
                                 }
                             })
                             .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
