@@ -3,6 +3,7 @@ package com.luis.store;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -27,6 +28,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -107,6 +109,14 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     String ePaymentOption = "";
 
     String acceptBankCheck = "";
+
+    String vStatusNew = "";
+
+    String vPaymentUserStatus = "";
+
+    private Button confirmarRecebimentoButton;
+
+    String ePaid = "";
 
     private LinearLayout chargeDetailArea;
     private LinearLayout chargeDetailTitleArea;
@@ -782,6 +792,10 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     }
 
 
+    public void ConfirmPayment() {
+        marcarComoEntregue();
+    }
+
     public void marcarComoEntregue() {
 
         HashMap<String, String> parameters = new HashMap<>();
@@ -1162,29 +1176,71 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     tipoDeEntregaValue = generalFunc.getJsonValueStr("tipoDeEntregaValue", obj_msg);
                     ePaymentOption = generalFunc.getJsonValueStr("ePaymentOption", obj_msg);
                     acceptBankCheck = generalFunc.getJsonValueStr("acceptBankCheck", obj_msg);
+                    vStatusNew = generalFunc.getJsonValueStr("vStatusNew", obj_msg);
+                    vPaymentUserStatus = generalFunc.getJsonValueStr("vPaymentUserStatus", obj_msg);
+                    ePaid = generalFunc.getJsonValueStr("ePaid", obj_msg);
 
                     TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
                     tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
 
                     TextView ePaymentOptionTextView = findViewById(R.id.ePaymentOptionTextView);
-                    ePaymentOptionTextView.setText("Forma de pagamento: " + ePaymentOption);
 
                     TextView mensagemDePagamentoTextView = findViewById(R.id.mensagemDePagamentoTextView);
 
+                    confirmarRecebimentoButton = findViewById(R.id.confirmarRecebimentoBtn);
+
                     if (ePaymentOption.equals("BankCheck")) {
+                        ePaymentOptionTextView.setText("Forma de pagamento: Cheque");
                         mensagemDePagamentoTextView.setText("Seu entregador deve receber o cheque relativo a esta transação.");
                     } else if (ePaymentOption.equals("Cash")) {
                         {
+                            ePaymentOptionTextView.setText("Forma de pagamento: Dinheiro");
                             mensagemDePagamentoTextView.setText("Seu entregador deve receber o dinheiro relativo a esta transação.");
                         }
 
                     } else {
 
                         ePaymentOption.equals("Card"); {
-                            mensagemDePagamentoTextView.setText("Pedido pago com cartão de crédito.");
+                            ePaymentOptionTextView.setText("Forma de pagamento: Cartão");
+                            mensagemDePagamentoTextView.setText("Pedido pago.");
                         }
 
                     }
+
+                    if (ePaid.equals("No")) {
+                        confirmarRecebimentoButton.setVisibility(View.VISIBLE);
+                    } else {
+                        confirmarRecebimentoButton.setVisibility(View.GONE);
+                    }
+
+                    confirmarRecebimentoButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                                exibirAlerta(view);
+                    }
+
+                        private void exibirAlerta(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                    builder.setTitle("Confirmar Recebimento")
+                            .setMessage("Confirmar recebimento do valor total da compra do cliente?")
+                            .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Lógica a ser executada quando o botão "Permitir" é clicado
+                                    // Por exemplo, você pode adicionar código para processar o recebimento.
+                                    ConfirmPayment();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Lógica a ser executada quando o botão "Cancelar" é clicado
+                                    dialog.dismiss(); // Fecha o diálogo
+                                }
+                            })
+                            .show();
+                }
+            });
+
 
                     JSONArray fareArr = generalFunc.getJsonArray("FareDetailsArr", obj_msg);
 
