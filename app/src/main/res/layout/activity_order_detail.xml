@@ -307,6 +307,22 @@
 
             </LinearLayout>
 
+            <RelativeLayout
+                android:id="@+id/confirmarRecebimentoArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <include
+                    android:id="@+id/confirmarRecebimentoBtn"
+                    layout="@layout/btn_type_1"
+                    android:layout_width="match_parent"
+                    android:text="Confirmar recebimento"
+                    android:layout_height="@dimen/all_btn_height"
+                    android:background="@color/white"/>
+
+            </RelativeLayout>
+
 
             <RelativeLayout
                 android:id="@+id/assignDriverBtnAra"
@@ -358,15 +374,6 @@
                     android:layout_alignParentBottom="true"
                     android:layout_weight="1" />
             </LinearLayout>
-
-            <Button
-                android:id="@+id/confirmarRecebimentoBtn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Confirmar recebimento"
-                android:visibility="gone"
-                android:backgroundTint="@color/appThemeColor_Dark_1"
-                android:textColor="@color/white"/>
 
             <include
                 android:id="@+id/trackOrderBtn"

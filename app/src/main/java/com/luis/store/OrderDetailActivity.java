@@ -96,7 +96,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
     View reAssignArea;
     ProgressBar mAssignDriverProgressBar;
     View confirmDeclineAreaView;
-    View assignDriverBtnAra;
+    View assignDriverBtnAra, confirmarRecebimentoArea;
     RecyclerView itemsRecyclerView;
     ImageView iconImgView;
     ProgressBar loadingBar;
@@ -114,7 +114,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
     String vPaymentUserStatus = "";
 
-    private Button confirmarRecebimentoButton;
+    private MButton confirmarRecebimentoButton;
 
     String ePaid = "";
 
@@ -187,6 +187,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         iconRefreshImgView = findViewById(R.id.iconRefreshImgView);
         iconInstructionView = findViewById(R.id.iconInstructionView);
         assignDriverBtnAra = findViewById(R.id.assignDriverBtnAra);
+        confirmarRecebimentoArea = findViewById(R.id.confirmarRecebimentoArea);
         confirmDeclineAreaView = findViewById(R.id.confirmDeclineAreaView);
         reAssignArea = findViewById(R.id.reAssignArea);
         bgView = findViewById(R.id.bgView);
@@ -203,6 +204,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
         declineBtn.setBackgroundColor(getResources().getColor(R.color.red));
         confirmBtn = ((MaterialRippleLayout) findViewById(R.id.confirmBtn)).getChildView();
         trackOrderBtn = ((MaterialRippleLayout) findViewById(R.id.trackOrderBtn)).getChildView();
+        confirmarRecebimentoButton = ((MaterialRippleLayout) findViewById(R.id.confirmarRecebimentoBtn)).getChildView();
 
         assignDriverBtn = ((MaterialRippleLayout) findViewById(R.id.assignDriverBtn)).getChildView();
 
@@ -261,6 +263,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
         deliveryStatusTxtView.setText(generalFunc.retrieveLangLBl("Delivery Executive not found", "LBL_NO_PROVER_FOUND"));
 
+        confirmarRecebimentoButton.setText("CONFIRMAR RECEBIMENTO");
 
         confirmBtn.setText(generalFunc.retrieveLangLBl("", "LBL_BTN_CONFIRM_TXT"));
         declineBtn.setText(generalFunc.retrieveLangLBl("", "LBL_DECLINE_TXT"));
@@ -793,7 +796,59 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
 
     public void ConfirmPayment() {
-        marcarComoEntregue();
+        HashMap<String, String> parameters = new HashMap<>();
+
+        parameters.put("type", "ConfirmPayment");
+        parameters.put("iCompanyId", generalFunc.getMemberId());
+        parameters.put("iOrderId", orderData.get("iOrderId"));
+        parameters.put("eUserType", Utils.app_type);
+
+
+        ExecuteWebServerUrl exeServerTask = new ExecuteWebServerUrl(getActContext(), parameters);
+        exeServerTask.setLoaderConfig(getActContext(), true, generalFunc);
+        exeServerTask.setDataResponseListener(responseString -> {
+            JSONObject responseObj = generalFunc.getJsonObject(responseString);
+
+            if (responseObj != null && !responseObj.equals("")) {
+
+                boolean isDataAvail = generalFunc.checkDataAvail(Utils.action_str, responseString);
+
+                if (isDataAvail) {
+                    (new StartActProcess(getActContext())).setOkResult();
+                    generalFunc.showGeneralMessage("", generalFunc.retrieveLangLBl("", generalFunc.getJsonValue(Utils.message_str, responseString)), true);
+                } else {
+
+                    GenerateAlertBox generateAlert = new GenerateAlertBox(getActContext());
+                    generateAlert.setContentMessage("",
+                            generalFunc.retrieveLangLBl("", generalFunc.getJsonValue(Utils.message_str, responseString)));
+                    generateAlert.setPositiveBtn("Fechar");
+                    generateAlert.showAlertBox();
+
+                    generateAlert.setCancelable(false);
+                    generateAlert.setBtnClickList(new GenerateAlertBox.HandleAlertBtnClick() {
+                        @Override
+                        public void handleBtnClick(int btn_id) {
+
+                            generateAlert.closeAlertBox();
+                            if (generalFunc.getJsonValue("DO_RESTART", responseString).equalsIgnoreCase("Yes")) {
+                                finish();
+                            }
+
+
+                        }
+                    });
+
+                    // generalFunc.showGeneralMessage("", generalFunc.retrieveLangLBl("", generalFunc.getJsonValue(Utils.message_str, responseString)));
+                }
+
+            } else {
+
+
+                generalFunc.showError();
+            }
+
+        });
+        exeServerTask.execute();
     }
 
     public void marcarComoEntregue() {
@@ -816,8 +871,8 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                 boolean isDataAvail = generalFunc.checkDataAvail(Utils.action_str, responseString);
 
                 if (isDataAvail) {
-                    (new StartActProcess(getActContext())).setOkResult();
-                    generalFunc.showGeneralMessage("", generalFunc.retrieveLangLBl("", generalFunc.getJsonValue(Utils.message_str, responseString)), true);
+                    generalFunc.showGeneralMessage("", generalFunc.retrieveLangLBl("", generalFunc.getJsonValue(Utils.message_str, responseString)));
+                    getOrderDetails();
                 } else {
 
                     GenerateAlertBox generateAlert = new GenerateAlertBox(getActContext());
@@ -1049,14 +1104,20 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                 if (isDataAvail) {
                     imageList.clear();
+
                     JSONObject obj_msg = generalFunc.getJsonObject(Utils.message_str, responseObj);
 
                     String driverAssign = generalFunc.getJsonValueStr("DriverAssign", obj_msg);
                     String assignStatus = generalFunc.getJsonValueStr("AssignStatus", obj_msg);
+                    Log.d("responseObj", assignStatus);
                     String eConfirm = generalFunc.getJsonValueStr("eConfirm", obj_msg);
                     String eDecline = generalFunc.getJsonValueStr("eDecline", obj_msg);
                     String eOrderPicked = generalFunc.getJsonValueStr("eOrderPickedByDriver", obj_msg);
                     String UserPhone = generalFunc.getJsonValueStr("UserPhone", obj_msg);
+                    String iStatusCode = generalFunc.getJsonValueStr("iStatusCode", obj_msg);
+                    Log.d("responseObj", iStatusCode);
+                    String ePaid = generalFunc.getJsonValueStr("ePaid", obj_msg);
+                    Log.d("responseObj", ePaid);
                     userName = generalFunc.getJsonValueStr("UserName", obj_msg);
                     vUserImage = generalFunc.getJsonValueStr("vUserImage", obj_msg);
                     vCompany = generalFunc.getJsonValueStr("vCompany", obj_msg);
@@ -1099,7 +1160,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                     iconImgView.setVisibility(View.VISIBLE);
 
-                    if (assignStatus.equalsIgnoreCase("REQ_NOT_FOUND")) {
+                    if (assignStatus.equalsIgnoreCase("REQ_NOT_FOUND") && !(iStatusCode.equalsIgnoreCase("6"))) {
                         deliveryStatusTxtView.setVisibility(View.GONE);
 
                         reAssignArea.setVisibility(View.GONE);
@@ -1155,10 +1216,24 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                         assignDriverBtnAra.setVisibility(View.GONE);
                         assignDriverBtn.setText(generalFunc.retrieveLangLBl("Assign Driver", "LBL_ASSIGN_DRIVER"));
                         ((MaterialRippleLayout) trackOrderBtn.getParent()).setVisibility(View.GONE);
-                    } else {
-                        ((MaterialRippleLayout) trackOrderBtn.getParent()).setVisibility(View.GONE);
-                        deliveryStatusTxtView.setVisibility(View.GONE);
+                    } else if(iStatusCode.equalsIgnoreCase("6") && ePaid.equalsIgnoreCase("No")) {
+                        Log.d("responseObj", "Está no if");
+                        deliveryStatusTxtView.setText("Pedido entregue. Aguardando confirmação de pagamento");
+
+                        deliveryStatusTxtView.setVisibility(View.VISIBLE);
+
+                        reAssignArea.setVisibility(View.GONE);
+                        assignDriverBtnAra.setVisibility(View.GONE);
+                        confirmarRecebimentoArea.setVisibility(View.VISIBLE);
+
+                        assignDriverBtn.setEnabled(false);
                         assignDriverBtn.setText(generalFunc.retrieveLangLBl("Assign Driver", "LBL_ASSIGN_DRIVER"));
+
+                        ((MaterialRippleLayout) trackOrderBtn.getParent()).setVisibility(View.GONE);
+                        confirmarRecebimentoButton.setVisibility(View.VISIBLE);
+                    }
+                    else if(iStatusCode.equalsIgnoreCase("6") && ePaid.equalsIgnoreCase("Yes")){
+                        generalFunc.showGeneralMessage("", "Pedido entregue e pagamento confirmado.", true);
                     }
 
 
@@ -1187,8 +1262,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                     TextView mensagemDePagamentoTextView = findViewById(R.id.mensagemDePagamentoTextView);
 
-                    confirmarRecebimentoButton = findViewById(R.id.confirmarRecebimentoBtn);
-
                     if (ePaymentOption.equals("BankCheck")) {
                         ePaymentOptionTextView.setText("Forma de pagamento: Cheque");
                         mensagemDePagamentoTextView.setText("Seu entregador deve receber o cheque relativo a esta transação.");
@@ -1205,12 +1278,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                             mensagemDePagamentoTextView.setText("Pedido pago.");
                         }
 
-                    }
-
-                    if (ePaid.equals("No")) {
-                        confirmarRecebimentoButton.setVisibility(View.VISIBLE);
-                    } else {
-                        confirmarRecebimentoButton.setVisibility(View.GONE);
                     }
 
                     confirmarRecebimentoButton.setOnClickListener(new View.OnClickListener() {
