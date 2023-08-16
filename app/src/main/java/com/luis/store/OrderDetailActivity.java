@@ -1216,7 +1216,11 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                         assignDriverBtnAra.setVisibility(View.GONE);
                         assignDriverBtn.setText(generalFunc.retrieveLangLBl("Assign Driver", "LBL_ASSIGN_DRIVER"));
                         ((MaterialRippleLayout) trackOrderBtn.getParent()).setVisibility(View.GONE);
-                    } else if(iStatusCode.equalsIgnoreCase("6") && ePaid.equalsIgnoreCase("No")) {
+                    }
+
+                    if(iStatusCode.equalsIgnoreCase("6") && ePaid.equalsIgnoreCase("Yes")){
+                        generalFunc.showGeneralMessage("", "Pedido entregue e pagamento confirmado.", true);
+                    }else if(iStatusCode.equalsIgnoreCase("6") && ePaid.equalsIgnoreCase("No")) {
                         Log.d("responseObj", "Está no if");
                         deliveryStatusTxtView.setText("Pedido entregue. Aguardando confirmação de pagamento");
 
@@ -1231,9 +1235,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                         ((MaterialRippleLayout) trackOrderBtn.getParent()).setVisibility(View.GONE);
                         confirmarRecebimentoButton.setVisibility(View.VISIBLE);
-                    }
-                    else if(iStatusCode.equalsIgnoreCase("6") && ePaid.equalsIgnoreCase("Yes")){
-                        generalFunc.showGeneralMessage("", "Pedido entregue e pagamento confirmado.", true);
                     }
 
 
@@ -1253,7 +1254,6 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                     acceptBankCheck = generalFunc.getJsonValueStr("acceptBankCheck", obj_msg);
                     vStatusNew = generalFunc.getJsonValueStr("vStatusNew", obj_msg);
                     vPaymentUserStatus = generalFunc.getJsonValueStr("vPaymentUserStatus", obj_msg);
-                    ePaid = generalFunc.getJsonValueStr("ePaid", obj_msg);
 
                     TextView tipoDeEntregaTextView = findViewById(R.id.tipoDeEntregaTextView);
                     tipoDeEntregaTextView.setText("Tipo de entrega: " + tipoDeEntregaValue);
@@ -1356,6 +1356,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                         generalFunc.showGeneralMessage("", generalFunc.retrieveLangLBl("", "LBL_TRY_AGAIN_LATER_TXT"), true);
                     }
                 } else {
+                    Log.d("responseObj", "passou pelo else");
                     generalFunc.showGeneralMessage("", generalFunc.retrieveLangLBl("", generalFunc.getJsonValueStr(Utils.message_str, responseObj)), true);
                 }
             } else {
@@ -1640,7 +1641,7 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
 
                 // assignDriverBtn.setText(tipoDeEntregaValue);
 
-                if (Objects.equals(tipoDeEntregaValue, "retirada")){
+                if (Objects.equals(tipoDeEntregaValue, "entrega")){
                     generalFunc.showGeneralMessage("",
                             "Como deseja realizar a entrega?",
                             "Enviado pela loja",

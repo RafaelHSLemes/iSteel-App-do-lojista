@@ -171,7 +171,7 @@ public class FireTripStatusMsg {
                     boolean isOnSameOrderDetailsPage = ((OrderDetailActivity) mContext).confirmIncomingDriver(generalFunc.getJsonValueStr("iOrderId", obj_msg), true);
 
                     if (isOnSameOrderDetailsPage && (messageStr.equalsIgnoreCase("OrderDelivered") || messageStr.equalsIgnoreCase("OrderCancelByAdmin"))) {
-                        generalFunc.showGeneralMessage("", vTitle, true);
+                        generalFunc.showGeneralMessage("", vTitle);
 
                         ((OrderDetailActivity) mContext).getOrderDetails();
                     } else if (isOnSameOrderDetailsPage) {
