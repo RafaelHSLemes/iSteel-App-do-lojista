@@ -145,6 +145,69 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp" />
 
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="false"
+                        app:srcCompat="@drawable/ic_down_arrow"
+                        android:tint="#bfbfbf" />
+
+                    <include
+                        android:id="@+id/stateEditBox"
+                        layout="@layout/editbox_form_design"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginTop="5dp" />
+                </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/cityArea"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="false"
+                        app:srcCompat="@drawable/ic_down_arrow"
+                        android:tint="#bfbfbf" />
+
+                    <include
+                        android:id="@+id/cityEditBox"
+                        layout="@layout/editbox_form_design"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginTop="5dp" />
+                </FrameLayout>
+            </LinearLayout>
+
             <RelativeLayout
                 android:id="@+id/mobileNoArea"
                 android:layout_width="match_parent"

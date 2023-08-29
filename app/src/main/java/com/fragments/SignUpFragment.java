@@ -69,6 +69,7 @@ public class SignUpFragment extends Fragment {
     GeneralFunctions generalFunc;
     MaterialEditText companyNameBox;
     MaterialEditText serviceTypeEditBox;
+    MaterialEditText stateEditBox, cityEditBox;
     //MaterialEditText fNameBox;
     //MaterialEditText lNameBox;
     MaterialEditText emailBox;
@@ -81,16 +82,17 @@ public class SignUpFragment extends Fragment {
     //LinearLayout inviteCodeArea;
     String required_str = "";
     String error_email_str = "";
-
+    String iStateId = "";
+    String iCityId = "";
     MTextView signbootomHint;
 
     ImageView countrydropimage, countrydropimagerror;
     CheckBox checkboxTermsCond;
     MTextView txtTermsCond;
-
+    JSONArray state_arr, city_arr;
     String iSelectedServiceId = "0";
     MTextView btnTxt, titleTxt;
-    LinearLayout btnArea;
+    LinearLayout btnArea, cityArea;
     ImageView btnImg;
     LinearLayout imgClose;
     static ImageView countryimage;
@@ -128,6 +130,8 @@ public class SignUpFragment extends Fragment {
 
         companyNameBox = (MaterialEditText) view.findViewById(R.id.companyNameBox);
         serviceTypeEditBox = (MaterialEditText) view.findViewById(R.id.serviceTypeEditBox);
+        stateEditBox = (MaterialEditText) view.findViewById(R.id.stateEditBox);
+        cityEditBox = (MaterialEditText) view.findViewById(R.id.cityEditBox);
         //fNameBox = (MaterialEditText) view.findViewById(R.id.fNameBox);
         //lNameBox = (MaterialEditText) view.findViewById(R.id.lNameBox);
         emailBox = (MaterialEditText) view.findViewById(R.id.emailBox);
@@ -137,6 +141,7 @@ public class SignUpFragment extends Fragment {
         invitecodeBox = (MaterialEditText) view.findViewById(R.id.invitecodeBox);
         signbootomHint = (MTextView) view.findViewById(R.id.signbootomHint);
         countryimage = view.findViewById(R.id.countryimage);
+        cityArea = view.findViewById(R.id.cityArea);
 
         countrydropimage = (ImageView) view.findViewById(R.id.countrydropimage);
         countrydropimagerror = (ImageView) view.findViewById(R.id.countrydropimagerror);
@@ -222,6 +227,7 @@ public class SignUpFragment extends Fragment {
 
         checkServiceTypeArea();
 //        buildLanguageList();
+        getStates();
 
         return view;
     }
@@ -240,6 +246,14 @@ public class SignUpFragment extends Fragment {
         serviceTypeEditBox.setOnTouchListener(new SetOnTouchList());
 
         serviceTypeEditBox.setOnClickListener(new setOnClickList());
+
+        stateEditBox.setOnTouchListener(new SetOnTouchList());
+
+        stateEditBox.setOnClickListener(new setOnClickList());
+
+        cityEditBox.setOnTouchListener(new SetOnTouchList());
+
+        cityEditBox.setOnClickListener(new setOnClickList());
     }
 
     public void setLabels() {
@@ -248,7 +262,8 @@ public class SignUpFragment extends Fragment {
         companyNameBox.setBothText(generalFunc.retrieveLangLBl("Store Name", "LBL_STORE_NAME"));
         //fNameBox.setBothText(generalFunc.retrieveLangLBl("First Name", "LBL_FIRST_NAME_HEADER_TXT"));
         //lNameBox.setBothText(generalFunc.retrieveLangLBl("Last Name", "LBL_LAST_NAME_HEADER_TXT"));
-
+        stateEditBox.setBothText("Selecione seu estado");
+        cityEditBox.setBothText("Selecione sua cidade");
 
         signbootomHint.setText(generalFunc.retrieveLangLBl("Already have an account ?", "LBL_ALREADY_HAVE_ACC"));
 
@@ -327,6 +342,128 @@ public class SignUpFragment extends Fragment {
                 (view.findViewById(R.id.serviceTypeSelectArea)).setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    public void getStates() {
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("type", "GetStates");
+        ExecuteWebServerUrl exeWebServer = new ExecuteWebServerUrl(getActContext(), parameters);
+        exeWebServer.setLoaderConfig(getActContext(), true, generalFunc);
+        exeWebServer.setIsDeviceTokenGenerate(true, "vDeviceToken", generalFunc);
+        exeWebServer.setDataResponseListener(responseString -> {
+
+            JSONObject responseObj = generalFunc.getJsonObject(responseString);
+            if (responseObj != null && !responseObj.equals("")) {
+
+                boolean isDataAvail = GeneralFunctions.checkDataAvail(Utils.action_str, responseObj);
+
+                if (isDataAvail == true) {
+                    state_arr = generalFunc.getJsonArray("StateList", responseObj);
+                } else {
+                    generalFunc.showGeneralMessage("",
+                            generalFunc.retrieveLangLBl("", generalFunc.getJsonValueStr(Utils.message_str, responseObj)));
+                }
+            } else {
+                generalFunc.showError();
+            }
+        });
+        exeWebServer.execute();
+    }
+
+    public void getCitiesFromState(String iStateId) {
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("type", "GetCitiesFromState");
+        parameters.put("iStateId", iStateId);
+        ExecuteWebServerUrl exeWebServer = new ExecuteWebServerUrl(getActContext(), parameters);
+        exeWebServer.setLoaderConfig(getActContext(), true, generalFunc);
+        exeWebServer.setIsDeviceTokenGenerate(true, "vDeviceToken", generalFunc);
+        exeWebServer.setDataResponseListener(responseString -> {
+
+            JSONObject responseObj = generalFunc.getJsonObject(responseString);
+            if (responseObj != null && !responseObj.equals("")) {
+
+                boolean isDataAvail = GeneralFunctions.checkDataAvail(Utils.action_str, responseObj);
+
+                if (isDataAvail == true) {
+                    cityArea.setVisibility(View.VISIBLE);
+                    city_arr = generalFunc.getJsonArray("CityList", responseObj);
+                } else {
+                    generalFunc.showGeneralMessage("",
+                            generalFunc.retrieveLangLBl("", generalFunc.getJsonValueStr(Utils.message_str, responseObj)));
+                }
+            } else {
+                generalFunc.showError();
+            }
+        });
+        exeWebServer.execute();
+    }
+
+    int selStatePosition = -1;
+    int selCityPosition = -1;
+
+    public void buildStates() {
+        if (state_arr == null || state_arr.length() == 0) {
+            return;
+        }
+
+        ArrayList<HashMap<String, String>> stateList = new ArrayList<>();
+
+        for (int i = 0; i < state_arr.length(); i++) {
+
+            JSONObject obj_tmp = generalFunc.getJsonObject(state_arr, i);
+
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put("vState", generalFunc.getJsonValueStr("vState", obj_tmp));
+            hashMap.put("iStateId", generalFunc.getJsonValueStr("iStateId", obj_tmp));
+            stateList.add(hashMap);
+
+            if (Utils.getText(stateEditBox).equalsIgnoreCase(stateList.get(i).get("vState"))) {
+                selStatePosition = i;
+            }
+        }
+
+        OpenListView.getInstance(getActContext(),"Selecione seu estado", stateList, OpenListView.OpenDirection.CENTER, true, position -> {
+
+
+            selStatePosition = position;
+            stateEditBox.setText(stateList.get(position).get("vState"));
+            iStateId = stateList.get(position).get("iStateId");
+            selCityPosition = -1;
+            cityEditBox.setText("");
+            getCitiesFromState(iStateId);
+
+        }).show(selStatePosition, "vState");
+    }
+
+    public void buildCities() {
+        if (city_arr == null || city_arr.length() == 0) {
+            return;
+        }
+
+        ArrayList<HashMap<String, String>> cityList = new ArrayList<>();
+
+        for (int i = 0; i < city_arr.length(); i++) {
+
+            JSONObject obj_tmp = generalFunc.getJsonObject(city_arr, i);
+
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put("vCity", generalFunc.getJsonValueStr("vCity", obj_tmp));
+            hashMap.put("iCityId", generalFunc.getJsonValueStr("iCityId", obj_tmp));
+            cityList.add(hashMap);
+
+            if (Utils.getText(cityEditBox).equalsIgnoreCase(cityList.get(i).get("vState"))) {
+                selCityPosition = i;
+            }
+        }
+
+        OpenListView.getInstance(getActContext(),"Selecione sua cidade", cityList, OpenListView.OpenDirection.CENTER, true, position -> {
+
+
+            selCityPosition = position;
+            cityEditBox.setText(cityList.get(position).get("vCity"));
+            iCityId = cityList.get(position).get("iCityId");
+
+        }).show(selCityPosition, "vCity");
     }
 
     ClickableSpan ClickableSpan = new ClickableSpan() {
@@ -443,6 +580,8 @@ public class SignUpFragment extends Fragment {
                 (Utils.getText(passwordBox).contains(" ") ? Utils.setErrorFields(passwordBox, noWhiteSpace)
                         : (Utils.getText(passwordBox).length() >= Utils.minPasswordLength ? true : Utils.setErrorFields(passwordBox, pass_length)))
                 : Utils.setErrorFields(passwordBox, required_str);
+        boolean stateEntered = Utils.checkText(stateEditBox) ? true : Utils.setErrorFields(stateEditBox, required_str);
+        boolean cityEntered = Utils.checkText(cityEditBox) ? true : Utils.setErrorFields(cityEditBox, required_str);
 
         if (countryBox.getText().length() == 0) {
             countryEntered = false;
@@ -469,7 +608,7 @@ public class SignUpFragment extends Fragment {
         }
 
         if (cNameEntered == false || /*fNameEntered == false ||*/ /*lNameEntered == false ||*/ emailEntered == false || mobileEntered == false
-                || countryEntered == false || passwordEntered == false || iSelectedServiceId.equals("") || iSelectedServiceId.equalsIgnoreCase("0")) {
+                || countryEntered == false || passwordEntered == false || stateEntered == false || cityEntered == false || iSelectedServiceId.equals("") || iSelectedServiceId.equalsIgnoreCase("0")) {
             return;
         }
 
@@ -499,6 +638,8 @@ public class SignUpFragment extends Fragment {
         parameters.put("UserType", Utils.userType);
         parameters.put("vDeviceType", Utils.deviceType);
         parameters.put("iServiceId", iSelectedServiceId);
+        parameters.put("vState", iStateId);
+        parameters.put("vCity", iCityId);
 
         //parameters.put("vFirstName", Utils.getText(fNameBox));
         //parameters.put("vLastName", Utils.getText(lNameBox));
@@ -632,7 +773,12 @@ public class SignUpFragment extends Fragment {
             } else if (i == imgClose.getId()) {
                 appLoginAct.onBackPressed();
             }
-
+            else if(i == R.id.stateEditBox) {
+                buildStates();
+            }
+            else if(i == R.id.cityEditBox) {
+                buildCities();
+            }
 
         }
 
