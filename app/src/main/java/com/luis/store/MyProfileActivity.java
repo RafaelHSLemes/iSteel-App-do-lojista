@@ -318,10 +318,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-
-
-        super.onBackPressed();
+        new StartActProcess(getActContext()).startAct(MainActivity.class);
     }
 
     public View getCurrView() {
@@ -532,7 +529,7 @@ public class MyProfileActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.backImgView:
 
-                    MyProfileActivity.super.onBackPressed();
+                    new StartActProcess(getActContext()).startAct(MainActivity.class);
                     break;
 
                 case R.id.userImgArea:

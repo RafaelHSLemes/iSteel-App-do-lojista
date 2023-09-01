@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.fragment.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,7 +14,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.general.files.SetOnTouchList;
 import com.luis.store.MyProfileActivity;
 import com.luis.store.R;
 import com.luis.store.SelectCountryActivity;
@@ -64,9 +67,12 @@ public class EditProfileFragment extends Fragment {
 
     String selected_language_code = "";
 
+    MaterialEditText stateEditBox, cityEditBox;
 
+    JSONArray state_arr, city_arr;
 
-
+    String iStateId = "";
+    String iCityId = "";
 
     ArrayList<HashMap<String, String>> languageDataList = new ArrayList<>();
     ArrayList<HashMap<String, String>> currencyDataList = new ArrayList<>();
@@ -84,7 +90,7 @@ public class EditProfileFragment extends Fragment {
 
     String required_str = "";
     String error_email_str = "";
-
+    LinearLayout cityArea;
     String vCountryCode = "";
     String vPhoneCode = "";
     boolean isCountrySelected = false;
@@ -109,6 +115,8 @@ public class EditProfileFragment extends Fragment {
 
         //fNameBox = (MaterialEditText) view.findViewById(R.id.fNameBox);
         //lNameBox = (MaterialEditText) view.findViewById(R.id.lNameBox);
+        stateEditBox = (MaterialEditText) view.findViewById(R.id.stateEditBox);
+        cityEditBox = (MaterialEditText) view.findViewById(R.id.cityEditBox);
         companyBox = (MaterialEditText) view.findViewById(R.id.companyBox);
         emailBox = (MaterialEditText) view.findViewById(R.id.emailBox);
         countryBox = (MaterialEditText) view.findViewById(R.id.countryBox);
@@ -119,6 +127,7 @@ public class EditProfileFragment extends Fragment {
         profileDescriptionEditBox = (MaterialEditText) view.findViewById(R.id.profileDescriptionEditBox);
         btn_type2 = ((MaterialRippleLayout) view.findViewById(R.id.btn_type2)).getChildView();
 
+        cityArea = view.findViewById(R.id.cityArea);
         currencySelectArea = (FrameLayout) view.findViewById(R.id.currencySelectArea);
         langSelectArea = (FrameLayout) view.findViewById(R.id.langSelectArea);
 
@@ -147,6 +156,8 @@ public class EditProfileFragment extends Fragment {
 
         buildLanguageList();
 
+        getStates();
+
 
         myProfileAct.changePageTitle(generalFunc.retrieveLangLBl("", "LBL_EDIT_PROFILE_TXT"));
 
@@ -174,6 +185,8 @@ public class EditProfileFragment extends Fragment {
         currencyBox.setBothText(generalFunc.retrieveLangLBl("", "LBL_CURRENCY_TXT"));
         profileDescriptionEditBox.setBothText(generalFunc.retrieveLangLBl("Service Description", "LBL_SERVICE_DESCRIPTION"));
         btn_type2.setText(generalFunc.retrieveLangLBl("", "LBL_BTN_PROFILE_UPDATE_PAGE_TXT"));
+        stateEditBox.setBothText("Selecione seu estado");
+        cityEditBox.setBothText("Selecione sua cidade");
 
         //fNameBox.getLabelFocusAnimator().start();
         //lNameBox.getLabelFocusAnimator().start();
@@ -210,15 +223,35 @@ public class EditProfileFragment extends Fragment {
         langBox.setOnTouchListener(new setOnTouchList());
         currencyBox.setOnTouchListener(new setOnTouchList());
 
+        stateEditBox.setOnTouchListener(new SetOnTouchList());
+
+        stateEditBox.setOnClickListener(new setOnClickList());
+
+        cityEditBox.setOnTouchListener(new SetOnTouchList());
+
+        cityEditBox.setOnClickListener(new setOnClickList());
+
         langBox.setOnClickListener(new setOnClickList());
         currencyBox.setOnClickListener(new setOnClickList());
     }
 
     public void setData() {
+        String vStateId = generalFunc.getJsonValueStr("vState", userProfileJsonObj);
+        String vCityId = generalFunc.getJsonValueStr("vCity", userProfileJsonObj);
+        if(!vStateId.equalsIgnoreCase("")){
+            stateEditBox.setText(generalFunc.getJsonValueStr("vStateName", userProfileJsonObj));
+            iStateId = vStateId;
+            getCitiesFromState(iStateId);
+        }
+        if(!vCityId.equalsIgnoreCase("")){
+            cityEditBox.setText(generalFunc.getJsonValueStr("vCityName", userProfileJsonObj));
+            iCityId = vCityId;
+        }
         companyBox.setText(generalFunc.getJsonValueStr("vCompany", userProfileJsonObj));
         emailBox.setText(generalFunc.getJsonValueStr("vEmail", userProfileJsonObj));
         countryBox.setText("+"+generalFunc.convertNumberWithRTL(generalFunc.getJsonValueStr("vCode", userProfileJsonObj)));
         mobileBox.setText(generalFunc.convertNumberWithRTL(generalFunc.getJsonValueStr("vPhone", userProfileJsonObj)));
+
         currencyBox.setText(generalFunc.getJsonValueStr("vCurrencyCompany", userProfileJsonObj));
         profileDescriptionEditBox.setText(generalFunc.getJsonValueStr("tProfileDescription", userProfileJsonObj));
 
@@ -313,6 +346,127 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
+    public void getStates() {
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("type", "GetStates");
+        ExecuteWebServerUrl exeWebServer = new ExecuteWebServerUrl(getActContext(), parameters);
+        exeWebServer.setLoaderConfig(getActContext(), true, generalFunc);
+        exeWebServer.setIsDeviceTokenGenerate(true, "vDeviceToken", generalFunc);
+        exeWebServer.setDataResponseListener(responseString -> {
+
+            JSONObject responseObj = generalFunc.getJsonObject(responseString);
+            if (responseObj != null && !responseObj.equals("")) {
+
+                boolean isDataAvail = GeneralFunctions.checkDataAvail(Utils.action_str, responseObj);
+
+                if (isDataAvail == true) {
+                    state_arr = generalFunc.getJsonArray("StateList", responseObj);
+                } else {
+                    generalFunc.showGeneralMessage("",
+                            generalFunc.retrieveLangLBl("", generalFunc.getJsonValueStr(Utils.message_str, responseObj)));
+                }
+            } else {
+                generalFunc.showError();
+            }
+        });
+        exeWebServer.execute();
+    }
+
+    public void getCitiesFromState(String iStateId) {
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("type", "GetCitiesFromState");
+        parameters.put("iStateId", iStateId);
+        ExecuteWebServerUrl exeWebServer = new ExecuteWebServerUrl(getActContext(), parameters);
+        exeWebServer.setLoaderConfig(getActContext(), true, generalFunc);
+        exeWebServer.setIsDeviceTokenGenerate(true, "vDeviceToken", generalFunc);
+        exeWebServer.setDataResponseListener(responseString -> {
+
+            JSONObject responseObj = generalFunc.getJsonObject(responseString);
+            if (responseObj != null && !responseObj.equals("")) {
+
+                boolean isDataAvail = GeneralFunctions.checkDataAvail(Utils.action_str, responseObj);
+
+                if (isDataAvail == true) {
+                    cityArea.setVisibility(View.VISIBLE);
+                    city_arr = generalFunc.getJsonArray("CityList", responseObj);
+                } else {
+                    generalFunc.showGeneralMessage("",
+                            generalFunc.retrieveLangLBl("", generalFunc.getJsonValueStr(Utils.message_str, responseObj)));
+                }
+            } else {
+                generalFunc.showError();
+            }
+        });
+        exeWebServer.execute();
+    }
+
+    int selStatePosition = -1;
+    int selCityPosition = -1;
+
+    public void buildStates() {
+        if (state_arr == null || state_arr.length() == 0) {
+            return;
+        }
+
+        ArrayList<HashMap<String, String>> stateList = new ArrayList<>();
+
+        for (int i = 0; i < state_arr.length(); i++) {
+
+            JSONObject obj_tmp = generalFunc.getJsonObject(state_arr, i);
+
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put("vState", generalFunc.getJsonValueStr("vState", obj_tmp));
+            hashMap.put("iStateId", generalFunc.getJsonValueStr("iStateId", obj_tmp));
+            stateList.add(hashMap);
+
+            if (Utils.getText(stateEditBox).equalsIgnoreCase(stateList.get(i).get("vState"))) {
+                selStatePosition = i;
+            }
+        }
+
+        OpenListView.getInstance(getActContext(),"Selecione seu estado", stateList, OpenListView.OpenDirection.CENTER, true, position -> {
+
+
+            selStatePosition = position;
+            stateEditBox.setText(stateList.get(position).get("vState"));
+            iStateId = stateList.get(position).get("iStateId");
+            selCityPosition = -1;
+            cityEditBox.setText("");
+            getCitiesFromState(iStateId);
+        }).show(selStatePosition, "vState");
+    }
+
+    public void buildCities() {
+        if (city_arr == null || city_arr.length() == 0) {
+            return;
+        }
+
+        ArrayList<HashMap<String, String>> cityList = new ArrayList<>();
+
+        for (int i = 0; i < city_arr.length(); i++) {
+
+            JSONObject obj_tmp = generalFunc.getJsonObject(city_arr, i);
+
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put("vCity", generalFunc.getJsonValueStr("vCity", obj_tmp));
+            hashMap.put("iCityId", generalFunc.getJsonValueStr("iCityId", obj_tmp));
+            cityList.add(hashMap);
+
+            if (Utils.getText(cityEditBox).equalsIgnoreCase(cityList.get(i).get("vState"))) {
+                selCityPosition = i;
+            }
+        }
+
+        OpenListView.getInstance(getActContext(),"Selecione sua cidade", cityList, OpenListView.OpenDirection.CENTER, true, position -> {
+
+
+            selCityPosition = position;
+            cityEditBox.setText(cityList.get(position).get("vCity"));
+            iCityId = cityList.get(position).get("iCityId");
+
+        }).show(selCityPosition, "vCity");
+    }
+
     public void showCurrencyList() {
         OpenListView.getInstance(getActContext(), generalFunc.retrieveLangLBl("", "LBL_SELECT_CURRENCY"), currencyDataList, OpenListView.OpenDirection.CENTER, true, position -> {
 
@@ -353,20 +507,25 @@ public class EditProfileFragment extends Fragment {
         boolean mobileEntered = Utils.checkText(mobileBox) ? true : Utils.setErrorFields(mobileBox, required_str);
         boolean countryEntered = isCountrySelected ? true : Utils.setErrorFields(countryBox, required_str);
         boolean currencyEntered = !selected_currency.equals("") ? true : Utils.setErrorFields(currencyBox, required_str);
+        boolean stateEntered = Utils.checkText(stateEditBox) ? true : Utils.setErrorFields(stateEditBox, required_str);
+        boolean cityEntered = Utils.checkText(cityEditBox) ? true : Utils.setErrorFields(cityEditBox, required_str);
 
         if (mobileEntered) {
             mobileEntered = mobileBox.length() >= 3 ? true : Utils.setErrorFields(mobileBox, generalFunc.retrieveLangLBl("", "LBL_INVALID_MOBILE_NO"));
         }
         if (/*fNameEntered == false || lNameEntered == false ||*/companyEntered == false || emailEntered == false || mobileEntered == false
-                || countryEntered == false || currencyEntered == false) {
+                || countryEntered == false || currencyEntered == false || stateEntered == false || cityEntered == false) {
             return;
         }
 
         String currentMobileNum = generalFunc.getJsonValueStr("vPhone", userProfileJsonObj);
         String currentPhoneCode = generalFunc.getJsonValueStr("vCode", userProfileJsonObj);
         String vEmail = generalFunc.getJsonValueStr("vEmail", userProfileJsonObj);
+        String currentStateId = generalFunc.getJsonValueStr("vState", userProfileJsonObj);
+        String currentCityId = generalFunc.getJsonValueStr("vCity", userProfileJsonObj);
 
-        if (!currentPhoneCode.equals(vPhoneCode) || !currentMobileNum.equals(Utils.getText(mobileBox)) || !vEmail.equals(Utils.getText(emailBox))) {
+
+        if (!currentStateId.equals(iStateId) || !currentCityId.equals(iCityId) ||!currentPhoneCode.equals(vPhoneCode) || !currentMobileNum.equals(Utils.getText(mobileBox)) || !vEmail.equals(Utils.getText(emailBox))) {
 
             generalFunc.showGeneralMessage("", generalFunc.retrieveLangLBl("", "LBL_EDIT_MOB_EMAIL_NOTE"), generalFunc.retrieveLangLBl("", "LBL_CANCEL_TXT"), generalFunc.retrieveLangLBl("", "LBL_BTN_OK_TXT"), buttonId -> {
 
@@ -391,6 +550,8 @@ public class EditProfileFragment extends Fragment {
         parameters.put("vName", Utils.getText(companyBox));
         parameters.put("vPhone", Utils.getText(mobileBox));
         parameters.put("vEmail", Utils.getText(emailBox));
+        parameters.put("vState", iStateId);
+        parameters.put("vCity", iCityId);
 //        parameters.put("tProfileDescription", Utils.getText(profileDescriptionEditBox));
         parameters.put("vPhoneCode", vPhoneCode);
         parameters.put("vCountry", vCountryCode);
@@ -541,6 +702,10 @@ public class EditProfileFragment extends Fragment {
             } else if (i == R.id.countryBox) {
                 new StartActProcess(getActContext()).startActForResult(myProfileAct.getEditProfileFrag(),
                         SelectCountryActivity.class, Utils.SELECT_COUNTRY_REQ_CODE);
+            }else if(i == R.id.stateEditBox) {
+                buildStates();
+            }else if(i == R.id.cityEditBox) {
+                buildCities();
             }
         }
     }

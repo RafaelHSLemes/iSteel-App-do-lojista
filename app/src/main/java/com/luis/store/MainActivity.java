@@ -20,6 +20,7 @@ import androidx.core.view.GravityCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
@@ -198,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // registerBackgroundAppReceiver();
 
         String eStatus = generalFunc.getJsonValueStr("eStatus", obj_userProfile);
+        String iCityId = generalFunc.getJsonValueStr("vCity", obj_userProfile);
 
         if (eStatus.equalsIgnoreCase("inactive")) {
 
@@ -214,7 +216,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             ft.replace(R.id.fragContainer, inactiveFragment);
             ft.commit();
 
-        } else {
+        } else if(iCityId.isEmpty()) {
+            Bundle bn = new Bundle();
+            new StartActProcess(getActContext()).startActForResult(MyProfileActivity.class, bn, Utils.MY_PROFILE_REQ_CODE);
+        } else{
             fragContainer.setVisibility(View.GONE);
             mainPageContainerView.setVisibility(View.VISIBLE);
 
