@@ -1271,7 +1271,15 @@ public class OrderDetailActivity extends BaseActivity implements OrderItemsRecyc
                             mensagemDePagamentoTextView.setText("Seu entregador deve receber o dinheiro relativo a esta transação.");
                         }
 
-                    } else {
+                    }
+                    else if (ePaymentOption.equals("Pix")) {
+                        {
+                            ePaymentOptionTextView.setText("Forma de pagamento: Pix");
+                            mensagemDePagamentoTextView.setText("Pedido pago.");
+                        }
+
+                    }
+                    else {
 
                         ePaymentOption.equals("Card"); {
                             ePaymentOptionTextView.setText("Forma de pagamento: Cartão");
